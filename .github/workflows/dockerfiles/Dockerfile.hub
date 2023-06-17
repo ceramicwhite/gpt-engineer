@@ -19,10 +19,9 @@ RUN apt-get -y update && \
     rm -rf /var/lib/apt/lists/* && \
     git clone -b ${GIT_TAG} --depth 1 https://github.com/AntonOsika/gpt-engineer.git . && \
     pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt && \
-    cp -r example project
-
+    pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 3000
 
-CMD ["gotty", "--port", "3000", "--permit-write", "--title-format", "GPT-ENGINEER", "python", "-m", "gpt_engineer.main", "project"]
+ENTRYPOINT ["gotty", "--port", "3000", "--permit-write", "--title-format", "GPT-ENGINEER", "python", "-m", "gpt_engineer.main"]
+CMD ["example"]
