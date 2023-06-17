@@ -1,0 +1,48 @@
+name: Build on main push
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKER_CLI_EXPERIMENTAL: enabled
+
+jobs:
+  build:
+    name: Build Docker image
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Checkout project
+        uses: actions/checkout@v2
+
+      # - id: keydb
+      #   uses: oz-elhassid/get-latest-release@master
+      #   with:
+      #     repository: AntonOsika/gpt-engineer
+      #     excludes: prerelease, draft
+      #     and_filters: "prerelease: false"
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+        id: qemu
+
+      - name: Setup Docker buildx action
+        uses: docker/setup-buildx-action@v1
+        id: buildx
+          
+      - name: Run Docker buildx for slim main
+        run: |
+          docker buildx build \
+          --platform linux/amd64,linux/arm64 \
+          --file .github/workflows/dockerfiles/Dockerfile.hub \
+          --build-arg GIT_TAG=main \
+          --tag ${{ secrets.DOCKERHUB_USERNAME }}/gpt-engineer:master--$(git rev-parse --short "$(git ls-remote https://github.com/AntonOsika/gpt-engineer.git HEAD | cut -f 1)") \
+          --tag ${{ secrets.DOCKERHUB_USERNAME }}/gpt-engineer:latest \
+          --push .

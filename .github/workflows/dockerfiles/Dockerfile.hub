@@ -1,0 +1,28 @@
+ARG GIT_TAG=${GIT_TAG:-main}
+
+FROM python:3.10-slim AS app
+
+ARG GIT_TAG
+
+COPY --from=ceramicwhite/gotty /usr/bin/gotty /bin/gotty
+
+ENV PIP_NO_CACHE_DIR=yes \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    HOME=/app \
+    PATH="${PATH}:/app/.local/bin"
+
+WORKDIR /app
+
+RUN apt-get -y update && \
+    apt-get -y install git && \
+    rm -rf /var/lib/apt/lists/* && \
+    git clone -b ${GIT_TAG} --depth 1 https://github.com/AntonOsika/gpt-engineer.git . && \
+    pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt && \
+    cp -r example project
+
+
+EXPOSE 3000
+
+CMD ["gotty", "--port", "3000", "--permit-write", "--title-format", "GPT-ENGINEER", "python", "-m", "gpt_engineer.main", "project"]
