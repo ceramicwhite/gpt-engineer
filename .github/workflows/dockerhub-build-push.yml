@@ -43,6 +43,6 @@ jobs:
           --platform linux/amd64,linux/arm64 \
           --file .github/workflows/dockerfiles/Dockerfile.hub \
           --build-arg GIT_TAG=main \
-          --tag ${{ secrets.DOCKERHUB_USERNAME }}/gpt-engineer:master--$(git rev-parse --short "$(git ls-remote https://github.com/AntonOsika/gpt-engineer.git HEAD | cut -f 1)") \
+          --tag ${{ secrets.DOCKERHUB_USERNAME }}/gpt-engineer:master-$(git rev-parse --short "$(git ls-remote https://github.com/AntonOsika/gpt-engineer.git HEAD | cut -f 1)") \
           --tag ${{ secrets.DOCKERHUB_USERNAME }}/gpt-engineer:latest \
           --push .
