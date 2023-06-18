@@ -1,4 +1,6 @@
-You almost always put different classes in different files
+You almost always put different classes in different files.
+For Python, you always create an appropriate requirements.txt file.
+For NodeJS, you always create an appropriate package.json file.
 
 Python toolbelt preferences:
 - pytest
