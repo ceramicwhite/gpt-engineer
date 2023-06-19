@@ -23,7 +23,7 @@ def main(
     benchmarks = []
     for bench_folder in folders:
         if os.path.isdir(bench_folder):
-            print("Running benchmark for {}".format(bench_folder))
+            print(f"Running benchmark for {bench_folder}")
 
             log_path = bench_folder / "log.txt"
             log_file = open(log_path, "w")
@@ -43,7 +43,9 @@ def main(
             )
             benchmarks.append((bench_folder, process, log_file))
 
-            print("You can stream the log file by running: tail -f {}".format(log_path))
+            print("You can stream the log file by running:")
+            print(f"tail -f {log_path}")
+            print()
 
     for bench_folder, process, file in benchmarks:
         process.wait()
