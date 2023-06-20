@@ -24,4 +24,4 @@ RUN apt-get -y update && \
 EXPOSE 3000
 
 ENTRYPOINT ["gotty", "--port", "3000", "--permit-write", "--title-format", "GPT-ENGINEER", "python", "-m", "gpt_engineer.main"]
-CMD ["example"]
+CMD ["projects/example"]
