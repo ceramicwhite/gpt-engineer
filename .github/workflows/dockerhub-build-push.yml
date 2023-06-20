@@ -46,7 +46,7 @@ jobs:
           --tag ${{ secrets.DOCKERHUB_USERNAME }}/gpt-engineer:build-$(git rev-parse --short "$(git ls-remote https://github.com/AntonOsika/gpt-engineer.git HEAD | cut -f 1)") \
           --push .
 
-      - name: Run Docker buildx for slim main
+      - name: Run Docker buildx for slim release
         run: |
           docker buildx build \
           --platform linux/amd64,linux/arm64 \
