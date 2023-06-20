@@ -22,12 +22,12 @@ jobs:
       - name: Checkout project
         uses: actions/checkout@v2
 
-      # - id: keydb
-      #   uses: oz-elhassid/get-latest-release@master
-      #   with:
-      #     repository: AntonOsika/gpt-engineer
-      #     excludes: prerelease, draft
-      #     and_filters: "prerelease: false"
+      - id: keydb
+        uses: oz-elhassid/get-latest-release@master
+        with:
+          repository: AntonOsika/gpt-engineer
+          excludes: prerelease, draft
+          and_filters: "prerelease: false"
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -44,5 +44,14 @@ jobs:
           --file .github/workflows/dockerfiles/Dockerfile.hub \
           --build-arg GIT_TAG=main \
           --tag ${{ secrets.DOCKERHUB_USERNAME }}/gpt-engineer:build-$(git rev-parse --short "$(git ls-remote https://github.com/AntonOsika/gpt-engineer.git HEAD | cut -f 1)") \
+          --push .
+
+      - name: Run Docker buildx for slim main
+        run: |
+          docker buildx build \
+          --platform linux/amd64,linux/arm64 \
+          --file .github/workflows/dockerfiles/Dockerfile.hub \
+          --build-arg GIT_TAG=${{ steps.keydb.outputs.tag_name }} \
+          --tag ${{ secrets.DOCKERHUB_USERNAME }}/gpt-engineer:${{ steps.keydb.outputs.tag_name }} \
           --tag ${{ secrets.DOCKERHUB_USERNAME }}/gpt-engineer:latest \
           --push .
