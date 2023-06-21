@@ -23,11 +23,12 @@ out for other projects
 
 # How you can help out
 You can:
-- Sign up to help [measure the progress of gpt-engineer towards AGI](https://forms.gle/TMX68mScyxQUsE6Y9)
+- Sign up to help [measure the progress of gpt-engineer towards "bootstrapping"](https://forms.gle/TMX68mScyxQUsE6Y9)
 - Submit PRs to address one of the items in the roadmap
 
 ### Repository ergonomics
 - [ ] Set up automatic AI/LLM based PR review
 
 ### Ad hoc experiments
-- [ ] Microsoft guidance, and benchmark if this helps improve it
+- [ ] Microsoft guidance, and benchmark if this helps improve performance
+
