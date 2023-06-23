@@ -1,18 +1,19 @@
 # list all folders in benchmark folder
 # for each folder, run the benchmark
 
+import contextlib
 import os
 import subprocess
 
 from itertools import islice
 from pathlib import Path
-from typing import Iterable
+from typing import Iterable, Union
 
 from typer import run
 
 
 def main(
-    n_benchmarks: int | None = None,
+    n_benchmarks: Union[int, None] = None,
 ):
     path = Path("benchmark")
 
@@ -59,7 +60,7 @@ def main(
             print(f.read())
         print()
 
-        try:
+        with contextlib.suppress(KeyboardInterrupt):
             subprocess.run(
                 [
                     "python",
@@ -70,8 +71,6 @@ def main(
                     "execute_only",
                 ],
             )
-        except KeyboardInterrupt:
-            pass
 
 
 if __name__ == "__main__":
