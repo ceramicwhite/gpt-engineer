@@ -19,7 +19,7 @@ RUN apt-get -y update && \
     rm -rf /var/lib/apt/lists/* && \
     git clone -b ${GIT_TAG} --depth 1 https://github.com/AntonOsika/gpt-engineer.git . && \
     pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+    pip install -e .
 
 EXPOSE 3000
 
