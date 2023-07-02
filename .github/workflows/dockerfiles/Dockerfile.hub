@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1.5-labs
+
 ARG GIT_TAG=${GIT_TAG:-main}
 
 FROM python:3.10-slim AS app
@@ -14,11 +16,9 @@ ENV PIP_NO_CACHE_DIR=yes \
 
 WORKDIR /app
 
-RUN apt-get -y update && \
-    apt-get -y install git && \
-    rm -rf /var/lib/apt/lists/* && \
-    git clone -b ${GIT_TAG} --depth 1 https://github.com/AntonOsika/gpt-engineer.git . && \
-    pip install --upgrade pip && \
+ADD https://github.com/AntonOsika/gpt-engineer.git#${GIT_TAG} .
+
+RUN pip install --upgrade pip && \
     pip install -e .
 
 EXPOSE 3000
