@@ -2,11 +2,6 @@
 Usage
 =====
 
-To use file-processor in a project::
-
-    import gpt_engineer
-
-
 Setup
 =====
 
@@ -34,4 +29,5 @@ Results
 
 To **run in the browser** you can simply:
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/AntonOsika/gpt-engineer/codespaces)
+.. image:: https://github.com/codespaces/badge.svg
+   :target: https://github.com/AntonOsika/gpt-engineer/codespaces

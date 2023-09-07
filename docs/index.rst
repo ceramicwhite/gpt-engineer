@@ -1,4 +1,4 @@
-Welcome to GPT-ENGINEER's Documentation!
+Welcome to GPT-ENGINEER's Documentation
 ========================================
 
 .. toctree::
@@ -7,7 +7,7 @@ Welcome to GPT-ENGINEER's Documentation!
 
    intro/quick_overview.md
    intro/repository_stats.md
-   RESULTS.md
+   results_link
    intro/main_script.md
    intro/scripts.md
    intro/preprompts.md
@@ -20,6 +20,7 @@ Welcome to GPT-ENGINEER's Documentation!
    usage
    readme_link
    windows_readme_link
+   open_models.md
 
 
 .. toctree::
@@ -40,7 +41,7 @@ Welcome to GPT-ENGINEER's Documentation!
 
 .. toctree::
    :maxdepth: 2
-   :caption: CHAT PARSING & SELf EXECUTION:
+   :caption: CHAT PARSING & SELF EXECUTION:
 
    intro/chat_parsing.md
 
@@ -57,7 +58,7 @@ Welcome to GPT-ENGINEER's Documentation!
 .. toctree::
    :maxdepth: 2
    :caption: PACKAGE API:
-   
+
    api_reference
 
 Indices and tables

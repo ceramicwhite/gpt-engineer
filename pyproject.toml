@@ -3,7 +3,7 @@ requires = ["setuptools", "wheel"]
 
 [project]
 name = "gpt-engineer"
-version = "0.0.8"
+version = "0.0.9"
 description = "Specify what you want it to build, the AI asks for clarification, and then builds it."
 readme = "README.md"
 requires-python = ">=3.8, <4.0"
@@ -21,6 +21,7 @@ dependencies = [
   'dataclasses-json == 0.5.7',
   'tiktoken >=0.0.4',
   'tabulate == 0.9.0',
+  'python-dotenv >= 0.21.0',
   'langchain >=0.0.240',
 ]
 
@@ -67,7 +68,7 @@ packages = ["gpt_engineer"]
 
 [tool.ruff]
 select = ["F", "E", "W", "I001"]
-line-length = 90
+line-length = 100
 show-fixes = false
 target-version = "py311"
 task-tags = ["TODO", "FIXME"]
