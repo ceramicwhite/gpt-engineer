@@ -49,7 +49,8 @@ def setup_sys_prompt_existing_code(dbs: DBs) -> str:
 def curr_fn() -> str:
     """
     Get the name of the current function
-    NOTE: This will be the name of the function that called this function,
+
+    This will be the name of the function that called this function,
     so it serves to ensure we don't hardcode the function name in the step,
     but allow the step names to be refactored
     """
@@ -76,11 +77,11 @@ def clarify(ai: AI, dbs: DBs) -> List[Message]:
         messages = ai.next(messages, user_input, step_name=curr_fn())
         msg = messages[-1].content.strip()
 
-        if msg == "Nothing more to clarify.":
+        if "nothing to clarify" in msg.lower():
             break
 
         if msg.lower().startswith("no"):
-            print("Nothing more to clarify.")
+            print("Nothing to clarify.")
             break
 
         print()
@@ -98,13 +99,11 @@ def clarify(ai: AI, dbs: DBs) -> List[Message]:
             print()
             return messages
 
-        user_input += (
-            "\n\n"
-            "Is anything else unclear? If yes, only answer in the form:\n"
-            "{remaining unclear areas} remaining questions.\n"
-            "{Next question}\n"
-            'If everything is sufficiently clear, only answer "Nothing more to clarify.".'
-        )
+        user_input += """
+            \n\n
+            Is anything else unclear? If yes, ask another question.\n
+            Otherwise state: "Nothing to clarify"
+            """
 
     print()
     return messages
@@ -295,7 +294,7 @@ def use_feedback(ai: AI, dbs: DBs):
 
 def set_improve_filelist(ai: AI, dbs: DBs):
     """Sets the file list for files to work with in existing code mode."""
-    ask_for_files(dbs.project_metadata)  # stores files as full paths.
+    ask_for_files(dbs.project_metadata, dbs.input)  # stores files as full paths.
     return []
 
 
@@ -347,8 +346,8 @@ def improve_existing_code(ai: AI, dbs: DBs):
     """
 
     files_info = get_code_strings(
-        dbs.project_metadata
-    )  # this only has file names not paths
+        dbs.input.path, dbs.project_metadata
+    )  # this has file names relative to the workspace path
 
     messages = [
         ai.fsystem(setup_sys_prompt_existing_code(dbs)),
