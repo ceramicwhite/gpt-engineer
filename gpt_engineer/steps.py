@@ -60,8 +60,17 @@ def curr_fn() -> str:
 # All steps below have the Step signature
 
 
+def lite_gen(ai: AI, dbs: DBs) -> List[Message]:
+    """Run the AI on only the main prompt and save the results"""
+    messages = ai.start(
+        dbs.input["prompt"], dbs.preprompts["file_format"], step_name=curr_fn()
+    )
+    to_files(messages[-1].content.strip(), dbs.workspace)
+    return messages
+
+
 def simple_gen(ai: AI, dbs: DBs) -> List[Message]:
-    """Run the AI on the main prompt and save the results"""
+    """Run the AI on the default prompts and save the results"""
     messages = ai.start(setup_sys_prompt(dbs), dbs.input["prompt"], step_name=curr_fn())
     to_files(messages[-1].content.strip(), dbs.workspace)
     return messages
@@ -126,30 +135,7 @@ def gen_spec(ai: AI, dbs: DBs) -> List[Message]:
     return messages
 
 
-def respec(ai: AI, dbs: DBs) -> List[Message]:
-    """Asks the LLM to review the specs so far and reiterate them if necessary"""
-    messages = AI.deserialize_messages(dbs.logs[gen_spec.__name__])
-    messages += [ai.fsystem(dbs.preprompts["respec"])]
-
-    messages = ai.next(messages, step_name=curr_fn())
-    messages = ai.next(
-        messages,
-        (
-            "Based on the conversation so far, please reiterate the specification for "
-            "the program. "
-            "If there are things that can be improved, please incorporate the "
-            "improvements. "
-            "If you are satisfied with the specification, just write out the "
-            "specification word by word again."
-        ),
-        step_name=curr_fn(),
-    )
-
-    dbs.memory["specification"] = messages[-1].content.strip()
-    return messages
-
-
-def gen_unit_tests(ai: AI, dbs: DBs) -> List[dict]:
+def gen_unit_tests(ai: AI, dbs: DBs) -> List[Message]:
     """
     Generate unit tests based on the specification, that should work.
     """
@@ -323,10 +309,10 @@ def get_improve_prompt(ai: AI, dbs: DBs):
             "-----------------------------",
             "The following files will be used in the improvement process:",
             f"{FILE_LIST_NAME}:",
-            str(dbs.project_metadata["file_list.txt"]),
+            colored(str(dbs.project_metadata[FILE_LIST_NAME]), "green"),
             "",
             "The inserted prompt is the following:",
-            f"'{dbs.input['prompt']}'",
+            colored(f"{dbs.input['prompt']}", "green"),
             "-----------------------------",
             "",
             "You can change these files in your project before proceeding.",
@@ -393,6 +379,7 @@ class Config(str, Enum):
     DEFAULT = "default"
     BENCHMARK = "benchmark"
     SIMPLE = "simple"
+    LITE = "lite"
     TDD = "tdd"
     TDD_PLUS = "tdd+"
     CLARIFY = "clarify"
@@ -409,6 +396,16 @@ class Config(str, Enum):
 STEPS = {
     Config.DEFAULT: [
         simple_gen,
+        gen_entrypoint,
+        execute_entrypoint,
+        human_review,
+    ],
+    Config.LITE: [
+        lite_gen,
+    ],
+    Config.CLARIFY: [
+        clarify,
+        gen_clarified_code,
         gen_entrypoint,
         execute_entrypoint,
         human_review,
@@ -432,23 +429,6 @@ STEPS = {
     ],
     Config.TDD_PLUS: [
         gen_spec,
-        gen_unit_tests,
-        gen_code_after_unit_tests,
-        fix_code,
-        gen_entrypoint,
-        execute_entrypoint,
-        human_review,
-    ],
-    Config.CLARIFY: [
-        clarify,
-        gen_clarified_code,
-        gen_entrypoint,
-        execute_entrypoint,
-        human_review,
-    ],
-    Config.RESPEC: [
-        gen_spec,
-        respec,
         gen_unit_tests,
         gen_code_after_unit_tests,
         fix_code,

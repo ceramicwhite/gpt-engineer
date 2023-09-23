@@ -31,11 +31,17 @@ def main(
     steps_config: StepsConfig = typer.Option(
         StepsConfig.DEFAULT, "--steps", "-s", help="decide which steps to run"
     ),
-    improve_option: bool = typer.Option(
+    improve_mode: bool = typer.Option(
         False,
         "--improve",
         "-i",
         help="Improve code from existing project.",
+    ),
+    lite_mode: bool = typer.Option(
+        False,
+        "--lite",
+        "-l",
+        help="Lite mode - run only the main prompt.",
     ),
     azure_endpoint: str = typer.Option(
         "",
@@ -48,11 +54,16 @@ def main(
 ):
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
 
-    # For the improve option take current project as path and add .gpteng folder
-    if improve_option:
-        # The default option for the --improve is the IMPROVE_CODE, not DEFAULT
+    if lite_mode:
+        assert not improve_mode, "Lite mode cannot improve code"
         if steps_config == StepsConfig.DEFAULT:
-            steps_config = StepsConfig.IMPROVE_CODE
+            steps_config = StepsConfig.LITE
+
+    if improve_mode:
+        assert (
+            steps_config == StepsConfig.DEFAULT
+        ), "Improve mode not compatible with other step configs"
+        steps_config = StepsConfig.IMPROVE_CODE
 
     load_env_if_needed()
 
@@ -75,9 +86,7 @@ def main(
         logs=DB(memory_path / "logs"),
         input=DB(input_path),
         workspace=DB(workspace_path),
-        preprompts=DB(
-            Path(__file__).parent / "preprompts"
-        ),  # Loads preprompts from the preprompts directory
+        preprompts=DB(Path(__file__).parent / "preprompts"),
         archive=DB(archive_path),
         project_metadata=DB(project_metadata_path),
     )
