@@ -25,32 +25,27 @@ Notes:
 
 """
 
+import logging
 import os
+
 from pathlib import Path
 
 import openai
 import typer
+
 from dotenv import load_dotenv
 
-from gpt_engineer.core.default.file_store import FileStore
-from gpt_engineer.core.default.disk_memory import DiskMemory
-from gpt_engineer.core.ai import AI
-from gpt_engineer.core.default.paths import PREPROMPTS_PATH, memory_path
-from gpt_engineer.applications.cli.file_selector import ask_for_files, get_all_code
-from gpt_engineer.tools.custom_steps import (
-    lite_gen,
-    clarified_gen,
-    self_heal,
-)
-from gpt_engineer.tools.experimental.experimental_steps import (
-    improve_automatic_file_selection,
-)
-from gpt_engineer.core.default.steps import gen_code, execute_entrypoint, improve
 from gpt_engineer.applications.cli.cli_agent import CliAgent
 from gpt_engineer.applications.cli.collect import collect_and_send_human_review
-from gpt_engineer.core.preprompts_holder import PrepromptsHolder
+from gpt_engineer.applications.cli.file_selector import ask_for_files
+from gpt_engineer.core.ai import AI
 from gpt_engineer.core.default.disk_execution_env import DiskExecutionEnv
-import logging
+from gpt_engineer.core.default.disk_memory import DiskMemory
+from gpt_engineer.core.default.file_store import FileStore
+from gpt_engineer.core.default.paths import PREPROMPTS_PATH, memory_path
+from gpt_engineer.core.default.steps import execute_entrypoint, gen_code, improve
+from gpt_engineer.core.preprompts_holder import PrepromptsHolder
+from gpt_engineer.tools.custom_steps import clarified_gen, lite_gen, self_heal
 
 app = typer.Typer()  # creates a CLI app
 
@@ -103,11 +98,6 @@ def main(
         "-i",
         help="Improve files_dict from existing project.",
     ),
-    improve_all_mode: bool = typer.Option(
-        False,
-        "--improve_all_experimental",
-        help="Improve files_dict from existing project, without manually choosing which files to improve, using vector store (EXPERIMENTAL).",
-    ),
     lite_mode: bool = typer.Option(
         False,
         "--lite",
@@ -149,9 +139,6 @@ def main(
     """
     logging.basicConfig(level=logging.DEBUG if verbose else logging.INFO)
     #
-    if improve_all_mode and not improve_mode:
-        print("Vector improve mode implies improve mode, setting improve_mode=True")
-        improve_mode = True
 
     if improve_mode:
         assert not (
@@ -185,10 +172,7 @@ def main(
     else:
         execution_fn = execute_entrypoint
 
-    if improve_all_mode:
-        improve_fn = improve_automatic_file_selection
-    else:
-        improve_fn = improve
+    improve_fn = improve
 
     preprompts_path = get_preprompts_path(use_custom_preprompts, Path(project_path))
     preprompts_holder = PrepromptsHolder(preprompts_path)
@@ -206,10 +190,7 @@ def main(
 
     store = FileStore(project_path)
     if improve_mode:
-        if improve_all_mode:
-            files_dict = store.download()
-        else:
-            files_dict = ask_for_files(project_path)
+        files_dict = ask_for_files(project_path)
         files_dict = agent.improve(files_dict, prompt)
     else:
         files_dict = agent.init(prompt)
