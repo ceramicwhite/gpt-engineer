@@ -1,10 +1,10 @@
 # Contributing to gpt-engineer
 
 The gpt-engineer is a community project and lives from your contributions - they are warmly appreciated. The main contribution avenues are:
+- Pull request: implement code and have it reviewed and potentially merged by the maintainers. Implementations of existing feature requests or fixes to bug reports are likely to be merged.
 - Bug report: report when something in gpt-engineer doesn't work. Do not report errors in programs written _by_ gpt-engineer.
 - Feature request: provide a detailed sketch about something you want to have implemented in gpt-engineer. There is no guarantee that features will be implemented.
 - Discussion: raise awareness of a potential improvement. This is often a good starting point before making a detailed feature request.
-- Pull request: implement code and have it reviewed and potentially merged by the maintainers. Implementations of existing feature requests or fixes to bug reports are likely to be merged.
 
 By participating in this project, you agree to abide by the [code of conduct](https://github.com/gpt-engineer-org/gpt-engineer/blob/main/.github/CODE_OF_CONDUCT.md).
 
@@ -111,6 +111,21 @@ fix end of files.........................................................Passed
 Now your file has been committed and you can push your changes.
 
 At the beginning this might seem like a tedious process (having to add the file again after `black` and `ruff` have modified it) but it is actually very useful. It allows you to see what changes `black` and `ruff` have made to your files and make sure that they are correct before you commit them.
+
+### Important Note When `pre-commit` Fails in the Build Pipeline
+Sometimes `pre-commit` will seemingly run successfully, as follows:
+
+```bash
+black................................................(no files to check)Skipped
+ruff.................................................(no files to check)Skipped
+check toml...........................................(no files to check)Skipped
+check yaml...........................................(no files to check)Skipped
+detect private key...................................(no files to check)Skipped
+fix end of files.....................................(no files to check)Skipped
+trim trailing whitespace.............................(no files to check)Skipped
+```
+
+However, you may see `pre-commit` fail in the build pipeline upon submitting a PR.  The solution to this is to run `pre-commit run --all-files` to force `pre-commit` to execute these checks, and make any necessary file modifications, to all files.
 
 
 ## Licensing
